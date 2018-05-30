@@ -1,3 +1,11 @@
+# Bugs:
+# 1. when there is more than one placeholder for the widgets
+# itsn't show messages for each widget correctly
+# 2. after typing somtning and disappering placeholder cursor not
+# click on roght position its move to the 0th position.
+
+
+
 
 from tkinter import *
 from tkinter import ttk
@@ -20,13 +28,13 @@ def key_press(event):
 def on_remove(event, message=''):
 	content_len = len(event.widget.get())
 
-	# if placeholder message was the text of widget deactive,
+	# if placeholder message was the text of the widget , deactive
 	# Backspace, Delete and Tab keys function.
 	if event.widget.get() == message:
 		event.widget.icursor(0)  # move the cursor to position 0
 		return 'break'  # deactive the default event action.
 
-	# display place holder message if nothing was in the inside of widget.
+	# display placeholder message if nothing was in the inside of widget.
 	elif content_len < 1:
 		event.widget.delete(0, END)  # delete text of the widget
 		event.widget.insert(0, message)  # insert placeholder message
