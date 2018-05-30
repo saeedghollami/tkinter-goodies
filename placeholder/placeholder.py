@@ -11,8 +11,7 @@ def key_press(event, style):
 	# placeholder message will remove and keypress unbinded.
 	if event.widget.get() != '':
 		event.widget.delete(0, END)
-		style.configure("firstpress.TEntry", foreground="black")
-		event.widget['style'] = "firstpress.TEntry"
+		event.widget['foreground'] = 'black'
 		event.widget.unbind("<Key>")
 
 
@@ -31,8 +30,7 @@ def remove(event, style=None, message=''):
 		event.widget.delete(0, END)  # delete text of the widget
 		event.widget.insert(0, message)  # insert placeholder message
 		event.widget.icursor(0)  # move cursor to position 0
-		style.configure("remove.TEntry", foreground="gray")  # style the widget text to gray
-		event.widget['style'] = "remove.TEntry"  # display style of the widget
+		event.widget['foreground'] = 'gray'
 		event.widget.bind("<Key>", lambda e: key_press(e, style))  # bind the key event again.
 
 
@@ -41,23 +39,39 @@ def remove(event, style=None, message=''):
 # should move to position zerro.
 def onclick(event):
 	event.widget.icursor(0)
+	print('im here')
 
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
-	print(str(widget), dir(widget))
-	message = message.strip()
-	message = ' ' + message + '  '
-	# insert the message to the widget	
-	widget.insert(0, message)
+	s = ttk.Style()
+	message = message.strip()  
+	message = ' ' + message + '  '  
+
+	# if the widget is the a entry or ttk entry
+	if widget.widgetName == "ttk::entry":
+		# insert the message to the widget	
+		widget.insert(0, message)
+		widget['foreground'] = 'gray'
+		
+		widget.bindtags((str(widget), "TEntry", "PostRemove", "PostClick", ".", "all"))
+
+	elif widget.widgetName == "entry":
+		widget.insert(0, message)
+		widget['foreground'] = 'gray'
+
+		widget.bindtags((str(widget), "Entry", "PostRemove", "PostClick", ".", "all"))
+
+
+	elif widget.widgetName == "text":
+		print(widget.widgetName)
+
+	else: print(widget.widgetName)	
 	# move the cursor to the first index
+	
 	widget.icursor(0)
-
-
-	# creating custom event order
-	# PostRemove and PostClick will be evaluvate after default event("TEntry")
-	widget.bindtags(( str(e), "TEntry", "PostRemove", "PostClick", ".", "all"))
-	widget.bind_class("PostClick", "<1>", onclick)
+	
+	# Common Events
 	widget.bind_class("PostRemove", "<BackSpace>", lambda e: remove(e,s, message))
 	widget.bind_class("PostRemove", "<Delete>", lambda e: remove(e,s, message))
 	widget.bind("<Key>", lambda e: key_press(e, s))
@@ -69,14 +83,24 @@ if __name__ == "__main__":
 	root = Tk()
 	var = StringVar()
 
-	e = ttk.Entry(root, exportselection=0)
-	e.pack()
+	# test for text widget
+	text = Text(root)
+	text.pack()
+	# placeholder(text, "This is a placeholder inside of text widget")
+
+	ttk_entry = ttk.Entry(root)
+	ttk_entry.pack()
+	#placeholder(ttk_entry, 'Enter your name ...')
+
+	entry = Entry(root) 
+	entry.pack()
+	placeholder(entry, "This is a normal old entry")
 
 	b = ttk.Button(root, text="Button")
 	b.pack()
 	b.focus()
 
-	placeholder(e, 'Enter your name ...')
+	
 
 	for child in root.winfo_children():
 		child.pack_configure(padx=5, pady=5)
