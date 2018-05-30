@@ -4,11 +4,7 @@ from tkinter import ttk
 
 
 # key press to remove placeholder message
-def key_press(event, style):
-	# if widget contant not empty 
-	#(the widget text will be placeholder message) 
-	# and user type somthing
-	# placeholder message will remove and keypress unbinded.
+def key_press(event):
 	if event.widget.get() != '':
 		event.widget.delete(0, END)
 		event.widget['foreground'] = 'black'
@@ -16,7 +12,6 @@ def key_press(event, style):
 
 
 def remove(event, style=None, message=''):
-	# len of text of the widget
 	content_len = len(event.widget.get())
 
 	# if placeholder message was the text of widget deactive,
@@ -34,17 +29,13 @@ def remove(event, style=None, message=''):
 		event.widget.bind("<Key>", lambda e: key_press(e, style))  # bind the key event again.
 
 
-# on click event handler.
-# When click inside the widget cursor 
-# should move to position zerro.
 def on_click(event):
 	event.widget.icursor(0)
-	print('im here')
 
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
-	
+
 	message = message.strip()  
 	message = ' ' + message + '  '  
 
