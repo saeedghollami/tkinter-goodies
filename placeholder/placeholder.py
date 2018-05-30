@@ -37,14 +37,14 @@ def remove(event, style=None, message=''):
 # on click event handler.
 # When click inside the widget cursor 
 # should move to position zerro.
-def onclick(event):
+def on_click(event):
 	event.widget.icursor(0)
 	print('im here')
 
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
-	s = ttk.Style()
+	
 	message = message.strip()  
 	message = ' ' + message + '  '  
 
@@ -55,6 +55,7 @@ def placeholder(widget=None, message=''):
 		widget['foreground'] = 'gray'
 		
 		widget.bindtags((str(widget), "TEntry", "PostRemove", "PostClick", ".", "all"))
+		
 
 	elif widget.widgetName == "entry":
 		widget.insert(0, message)
@@ -70,8 +71,9 @@ def placeholder(widget=None, message=''):
 	# move the cursor to the first index
 	
 	widget.icursor(0)
-	
+
 	# Common Events
+	widget.bind_class("PostClick", "<1>", on_click)
 	widget.bind_class("PostRemove", "<BackSpace>", lambda e: remove(e,s, message))
 	widget.bind_class("PostRemove", "<Delete>", lambda e: remove(e,s, message))
 	widget.bind("<Key>", lambda e: key_press(e, s))
@@ -83,15 +85,17 @@ if __name__ == "__main__":
 	root = Tk()
 	var = StringVar()
 
-	# test for text widget
+	# Text
 	text = Text(root)
 	text.pack()
 	# placeholder(text, "This is a placeholder inside of text widget")
 
+	# ttk Entry
 	ttk_entry = ttk.Entry(root)
 	ttk_entry.pack()
-	#placeholder(ttk_entry, 'Enter your name ...')
+	placeholder(ttk_entry, 'Enter your name ...')
 
+	# Entry
 	entry = Entry(root) 
 	entry.pack()
 	placeholder(entry, "This is a normal old entry")
