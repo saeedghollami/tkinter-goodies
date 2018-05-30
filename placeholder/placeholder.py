@@ -53,10 +53,6 @@ def placeholder(widget=None, message=''):
 	# move the cursor to the first index
 	widget.icursor(0)
 
-	# make the color of text gray
-	s = ttk.Style()
-	s.configure("TEntry", foreground="gray")
-	widget['style'] = "TEntry"
 
 	# creating custom event order
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
