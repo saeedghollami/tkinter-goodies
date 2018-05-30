@@ -3,7 +3,7 @@
 # itsn't show messages for each widget correctly
 # 2. after typing somtning and disappering placeholder cursor not
 # click on roght position its move to the 0th position.
-
+# test commend
 
 
 
