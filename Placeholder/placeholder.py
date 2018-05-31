@@ -11,76 +11,67 @@ from tkinter import *
 from tkinter import ttk
 
 
+_flag = True  # if placeholder exsist this flag will be true otherwise False
+
 # on_click event
 def onclick(event):
-	event.widget.icursor(0)
+	global _flag
 
-
+	# if there is a placeholder cursor should be move postion 0
+	if _flag:
+		event.widget.icursor(0)  # cursor move to postion 0
+	
+	# if there isn't any placeholder cursor will do it's normal job
+	
 # key press to on_remove placeholder message
 def key_press(event):
+	global _flag
 
-	if event.widget.get() != '':
-		event.widget.delete(0, END)
-		event.widget.configure(foreground='black')
-		event.widget.unbind("<Key>")
-
+	# if user type somthing when placeholder exsist 
+	if _flag:
+		event.widget.delete(0, END)  # delete placeholder
+		event.widget.configure(foreground='black')  # text should be black
+		_flag = False  # that's mean there isn't placeholder anymore.
+		
 
 def on_remove(event, message=''):
+	global _flag
 	content_len = len(event.widget.get())
 
-	# if placeholder message was the text of the widget , deactive
-	# Backspace, Delete and Tab keys function.
-	if event.widget.get() == message:
+	# if there is a placeholder
+	if _flag:
 		event.widget.icursor(0)  # move the cursor to position 0
-		return 'break'  # deactive the default event action.
+		return 'break'  # don't remove any chars.
 
 	# display placeholder message if nothing was in the inside of widget.
-	elif content_len < 1:
+	elif not _flag and content_len < 1:
 		event.widget.delete(0, END)  # delete text of the widget
 		event.widget.insert(0, message)  # insert placeholder message
 		event.widget.icursor(0)  # move cursor to position 0
 		event.widget.configure(foreground= "gray")
-		event.widget.bind("<Key>", key_press)  # bind the key event again.
+		_flag = True
+
+	print(_flag)
 
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
+	global _flag
+	_flag = True  # There is a placeholder
+
 	message = message.strip()
-	message = ' ' + message + '  '
+	message = ' ' + message + ' '
 	widget.insert(0, message)  # insert the message to the widget
 	widget.icursor(0)  # move the cursor to the first index
 	widget.configure(foreground = "gray")  # make the text Gray
 
 	# creating custom event order
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
-	widget.bindtags(( str(e), "TEntry", "PostRemove", "PostClick", ".", "all"))
+	widget.bindtags(( str(widget), "TEntry", "PostRemove", "PostClick", ".", "all"))
 	widget.bind_class("PostClick", "<1>", onclick)
 	widget.bind_class("PostRemove", "<BackSpace>", lambda e: on_remove(e, message))
-	widget.bind_class("PostRemove", "<Delete>", lambda e: on_remove(e, message))
+	# widget.bind_class("PostRemove", "<Delete>", lambda e: on_remove(e, message))
 	widget.bind("<Key>", key_press)
-	widget.bind("<Tab>", on_remove)
+	# widget.bind("<Tab>", on_remove)
 
 
-# Some test
-if __name__ == "__main__":
-	# test placeholder
-	root = Tk()
-	var = StringVar()
-
-	e = ttk.Entry(root)
-	e.pack()
-	placeholder(e, 'First placeholder ...')
-
-	e1 = ttk.Entry(root)
-	e1.pack()
-	placeholder(e1, 'Second placeholder ...')
-
-	b = ttk.Button(root, text="Button")
-	b.pack()
-	b.focus()
-
-	for child in root.winfo_children():
-		child.pack_configure(padx=5, pady=5)
-
-
-	root.mainloop()
