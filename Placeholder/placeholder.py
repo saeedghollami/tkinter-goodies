@@ -99,11 +99,11 @@ def on_delete(event, message):
 		event.widget.configure(foreground= "gray")
 		_flag = True
 
+
 def on_select(event):
-	event.widget.icursor(0)
-	event.widget.configure(exportselection=0)
-	print('on select')
-	# event.widget.configure(highlight='white')
+	# event.widget.icursor(0)
+	event.widget.select_clear()
+	# return 'break'
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
@@ -122,8 +122,8 @@ def placeholder(widget=None, message=''):
 	widget.bind_class("PostEvent", "<1>", on_click)
 	widget.bind_class("PostEvent", "<BackSpace>", lambda e: on_remove(e, message))
 	widget.bind_class("PostEvent", "<Delete>", lambda e: on_remove(e, message))
+	widget.bind_class("PostEvent", "<ButtonPress-1><Motion>", on_select)
 	widget.bind("<Double-Button-1>", on_double_click)
 	widget.bind("<Key>", key_press)
-	widget.bind_class("PostEvent", "<ButtonPress-1><Motion><ButtonRelease-1>", on_select)
 
 
