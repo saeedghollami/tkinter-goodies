@@ -30,7 +30,7 @@ _traked_keys = (
 
 
 # on_click event
-	# if there is a placeholder cursor should be move postion 0
+# if there is a placeholder cursor should be move postion 0
 def on_click(event):
 	global _flag
 
@@ -62,10 +62,13 @@ def key_press(event):
 		event.widget.configure(foreground='black')  # text should be black
 		_flag = False  # that's mean there isn't placeholder anymore.
 
+	elif _flag and keysym in ["Delete", "BackSpace"]:
+		return 'break'
 
-	print(keysym.__repr__(), keycode, _flag)
+	else:
+		print(keysym.__repr__(), keycode, _flag)
 
-def on_backspace(event, message=''):
+def on_remove(event, message=''):
 	global _flag
 	content_len = len(event.widget.get())
 
@@ -116,8 +119,8 @@ def placeholder(widget=None, message=''):
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
 	widget.bindtags(( str(widget), "TEntry", "PostRemove", "PostClick", ".", "all"))
 	widget.bind_class("PostClick", "<1>", on_click)
-	widget.bind_class("PostRemove", "<BackSpace>", lambda e: on_backspace(e, message))
-	widget.bind_class("PostRemove", "<Delete>", lambda e: on_backspace(e, message))
+	widget.bind_class("PostRemove", "<BackSpace>", lambda e: on_remove(e, message))
+	widget.bind_class("PostRemove", "<Delete>", lambda e: on_remove(e, message))
 	widget.bind("<Double-Button-1>", on_double_click)
 	widget.bind("<Key>", key_press)
 
