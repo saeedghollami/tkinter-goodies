@@ -1,9 +1,9 @@
-# Bugs:
-# 1. when there is more than one placeholder for the widgets
-# itsn't show messages for each widget correctly
-# 2. after typing somtning and disappering placeholder cursor not
-# click on roght position its move to the 0th position.
-# 1test commend
+# Kown Bug:
+# 
+
+# Question:
+# how to disable text selecting in tkinter entry? 
+
 
 
 from tkinter import *
@@ -56,7 +56,7 @@ def key_press(event):
 	keycode = event.keycode
 
 	# if user type somthing when placeholder exsist 
-	# and user typed keycode is between 10 and 61
+	# and user typed char in _traked_keys list
 	if _flag and keysym in _traked_keys:
 		event.widget.delete(0, END)  # delete placeholder
 		event.widget.configure(foreground='black')  # text should be black
@@ -65,8 +65,6 @@ def key_press(event):
 	elif _flag and keysym in ["Delete", "BackSpace"]:
 		return 'break'
 
-	else:
-		print(keysym.__repr__(), keycode, _flag)
 
 def on_remove(event, message=''):
 	global _flag
@@ -100,9 +98,12 @@ def on_delete(event, message):
 		event.widget.icursor(0)  # move cursor to position 0
 		event.widget.configure(foreground= "gray")
 		_flag = True
-	print(_flag)
-	
 
+def on_select(event):
+	event.widget.icursor(0)
+	event.widget.configure(exportselection=0)
+	print('on select')
+	# event.widget.configure(highlight='white')
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
@@ -117,11 +118,12 @@ def placeholder(widget=None, message=''):
 
 	# creating custom event order
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
-	widget.bindtags(( str(widget), "TEntry", "PostRemove", "PostClick", ".", "all"))
-	widget.bind_class("PostClick", "<1>", on_click)
-	widget.bind_class("PostRemove", "<BackSpace>", lambda e: on_remove(e, message))
-	widget.bind_class("PostRemove", "<Delete>", lambda e: on_remove(e, message))
+	widget.bindtags(( str(widget), "TEntry", "PostEvent", ".", "all"))
+	widget.bind_class("PostEvent", "<1>", on_click)
+	widget.bind_class("PostEvent", "<BackSpace>", lambda e: on_remove(e, message))
+	widget.bind_class("PostEvent", "<Delete>", lambda e: on_remove(e, message))
 	widget.bind("<Double-Button-1>", on_double_click)
 	widget.bind("<Key>", key_press)
+	widget.bind_class("PostEvent", "<ButtonPress-1><Motion><ButtonRelease-1>", on_select)
 
 
