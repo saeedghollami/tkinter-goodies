@@ -47,7 +47,6 @@ def on_click(event):
 	if event.widget.placeholder_exist:
 		event.widget.icursor(0)  # cursor move to postion 0
 
-	
 
 # double click event handler
 # if there is a placeholder double click should move cursor to pos 0
@@ -76,22 +75,23 @@ def on_remove(event):
 	# display placeholder message if nothing is inside of widget.
 	elif content_len < 1:
 		event.widget.delete(0, END)  # delete text of the widget
-		event.widget.insert(0, event.widget.placeholder_message)  # insert placeholder message
+		# insert placeholder message
+		event.widget.insert(0, event.widget.placeholder_message)  
 		event.widget.icursor(0)  # move cursor to position 0
 		event.widget.configure(foreground= "gray")
 		event.widget.placeholder_exist = True
 
 
 # Add placeholder to the widget.
-def placeholder(widget=None, message=''):
+def placeholder(widget=None, placeholder=''):
 
-	message = message.strip()
-	message = ' ' + message + ' '
-	widget.insert(0, message)  # insert the message to the widget
+	placeholder = placeholder.strip()
+	placeholder = ' ' + placeholder + ' '
+	widget.insert(0, placeholder)  # insert the message to the widget
 	widget.icursor(0)  # move the cursor to the first index
 	widget.configure(foreground = "gray")  # make the text Gray
 	
-	widget.placeholder_message = message  # save every widget message in itslef
+	widget.placeholder_message = placeholder  # save every widget message in itslef
 	widget.placeholder_exist = True
 	
 
@@ -107,4 +107,3 @@ def placeholder(widget=None, message=''):
 
 
 ttk.Entry.placeholder = placeholder
-
