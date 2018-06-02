@@ -7,8 +7,6 @@ from tkinter import *
 from tkinter import ttk
 
 
-_flag = True  # if placeholder exsist this flag will be true otherwise False
-
 # the keys didn't remove placeholder when it exisit
 # _no_keys = ("Tab", "Shift_L", "Control_L", "Control_L", "Return")
 _traked_keys = (
@@ -28,27 +26,25 @@ _traked_keys = (
 
 # if somthing typed this function will be called.
 def key_press(event):
-	global _flag
 
 	keysym = event.keysym
 	keycode = event.keycode
 
 	# if user type somthing when placeholder exist 
 	# and user typed char in _traked_keys list:
-	if _flag and keysym in _traked_keys:
+	if event.widget.placeholder_exist and keysym in _traked_keys:
 		event.widget.delete(0, END)  # delete placeholder
 		event.widget.configure(foreground='black')  # text should be black
-		_flag = False  # that's mean there isn't placeholder anymore.
+		# that's mean there isn't placeholder anymore.
+		event.widget.placeholder_exist = False  
 
-	elif _flag and keysym in ["Delete", "BackSpace"]:
+	elif event.widget.placeholder_exist and keysym in ["Delete", "BackSpace"]:
 		return 'break'
 
 
 # if there is a placeholder cursor should be move postion 0
 def on_click(event):
-	global _flag
-
-	if _flag:
+	if event.widget.placeholder_exist:
 		event.widget.icursor(0)  # cursor move to postion 0
 
 	
@@ -56,47 +52,38 @@ def on_click(event):
 # double click event handler
 # if there is a placeholder double click should move cursor to pos 0
 def on_double_click(event):
-	global _flag
 
-	if _flag:
+	if event.widget.placeholder_exist:
 		event.widget.icursor(0)
 		return 'break'
 
 
 # clear highlighted color if there is a placeholder
 def on_select(event):
-	global _flag
-
-	if _flag:
+	if event.widget.placeholder_exist:
 		event.widget.icursor(0)
 		event.widget.select_clear()
 
 
 def on_remove(event):
-	global _flag
 	content_len = len(event.widget.get())
 
 	# if there is a placeholder
-	if _flag:
+	if event.widget.placeholder_exist:
 		event.widget.icursor(0)  # move the cursor to position 0
 		return 'break'  # don't run default event handler.
 
 	# display placeholder message if nothing is inside of widget.
 	elif content_len < 1:
 		event.widget.delete(0, END)  # delete text of the widget
-		event.widget.insert(0, event.widget.message)  # insert placeholder message
+		event.widget.insert(0, event.widget.placeholder_message)  # insert placeholder message
 		event.widget.icursor(0)  # move cursor to position 0
 		event.widget.configure(foreground= "gray")
-		_flag = True
-
-	print(content_len)
+		event.widget.placeholder_exist = True
 
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
-
-	global _flag
-	_flag = True  # There is a placeholder
 
 	message = message.strip()
 	message = ' ' + message + ' '
@@ -104,7 +91,9 @@ def placeholder(widget=None, message=''):
 	widget.icursor(0)  # move the cursor to the first index
 	widget.configure(foreground = "gray")  # make the text Gray
 	
-	widget.message = message  # save every widget message in itslef
+	widget.placeholder_message = message  # save every widget message in itslef
+	widget.placeholder_exist = True
+	
 
 	# creating custom event order
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
