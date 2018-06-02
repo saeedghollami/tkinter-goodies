@@ -1,10 +1,7 @@
 # Kown Bug:
-# 
+# with multipe widgets that's show last message.
 
 # Question:
-# how to disable text selecting in tkinter entry? 
-
-
 
 from tkinter import *
 from tkinter import ttk
@@ -29,7 +26,24 @@ _traked_keys = (
 )
 
 
-# on_click event
+# if somthing typed this function will be called.
+def key_press(event):
+	global _flag
+
+	keysym = event.keysym
+	keycode = event.keycode
+
+	# if user type somthing when placeholder exist 
+	# and user typed char in _traked_keys list:
+	if _flag and keysym in _traked_keys:
+		event.widget.delete(0, END)  # delete placeholder
+		event.widget.configure(foreground='black')  # text should be black
+		_flag = False  # that's mean there isn't placeholder anymore.
+
+	elif _flag and keysym in ["Delete", "BackSpace"]:
+		return 'break'
+
+
 # if there is a placeholder cursor should be move postion 0
 def on_click(event):
 	global _flag
@@ -37,6 +51,7 @@ def on_click(event):
 	if _flag:
 		event.widget.icursor(0)  # cursor move to postion 0
 
+	
 
 # double click event handler
 # if there is a placeholder double click should move cursor to pos 0
@@ -48,25 +63,16 @@ def on_double_click(event):
 		return 'break'
 
 
-# key press event handler
-def key_press(event):
+# clear highlighted color if there is a placeholder
+def on_select(event):
 	global _flag
 
-	keysym = event.keysym
-	keycode = event.keycode
-
-	# if user type somthing when placeholder exsist 
-	# and user typed char in _traked_keys list
-	if _flag and keysym in _traked_keys:
-		event.widget.delete(0, END)  # delete placeholder
-		event.widget.configure(foreground='black')  # text should be black
-		_flag = False  # that's mean there isn't placeholder anymore.
-
-	elif _flag and keysym in ["Delete", "BackSpace"]:
-		return 'break'
+	if _flag:
+		event.widget.icursor(0)
+		event.widget.select_clear()
 
 
-def on_remove(event, message=''):
+def on_remove(event):
 	global _flag
 	content_len = len(event.widget.get())
 
@@ -78,35 +84,17 @@ def on_remove(event, message=''):
 	# display placeholder message if nothing is inside of widget.
 	elif content_len < 1:
 		event.widget.delete(0, END)  # delete text of the widget
-		event.widget.insert(0, message)  # insert placeholder message
+		event.widget.insert(0, event.widget.message)  # insert placeholder message
 		event.widget.icursor(0)  # move cursor to position 0
 		event.widget.configure(foreground= "gray")
 		_flag = True
 
+	print(content_len)
 
-# Delete key event handler
-def on_delete(event, message):
-	global _flag
-	content_len = len(event.widget.get())
-
-	if _flag:
-		return 'break'
-
-	elif content_len < 1:
-		event.widget.delete(0, END)  # delete text of the widget
-		event.widget.insert(0, message)  # insert placeholder message
-		event.widget.icursor(0)  # move cursor to position 0
-		event.widget.configure(foreground= "gray")
-		_flag = True
-
-
-def on_select(event):
-	# event.widget.icursor(0)
-	event.widget.select_clear()
-	# return 'break'
 
 # Add placeholder to the widget.
 def placeholder(widget=None, message=''):
+
 	global _flag
 	_flag = True  # There is a placeholder
 
@@ -115,15 +103,19 @@ def placeholder(widget=None, message=''):
 	widget.insert(0, message)  # insert the message to the widget
 	widget.icursor(0)  # move the cursor to the first index
 	widget.configure(foreground = "gray")  # make the text Gray
+	
+	widget.message = message  # save every widget message in itslef
 
 	# creating custom event order
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
 	widget.bindtags(( str(widget), "TEntry", "PostEvent", ".", "all"))
 	widget.bind_class("PostEvent", "<1>", on_click)
-	widget.bind_class("PostEvent", "<BackSpace>", lambda e: on_remove(e, message))
-	widget.bind_class("PostEvent", "<Delete>", lambda e: on_remove(e, message))
+	widget.bind_class("PostEvent", "<BackSpace>", on_remove)
+	widget.bind_class("PostEvent", "<Delete>", on_remove)
 	widget.bind_class("PostEvent", "<ButtonPress-1><Motion>", on_select)
 	widget.bind("<Double-Button-1>", on_double_click)
 	widget.bind("<Key>", key_press)
 
+
+ttk.Entry.placeholder = placeholder
 
