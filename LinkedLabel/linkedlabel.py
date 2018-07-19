@@ -49,4 +49,5 @@ if __name__ == "__main__":
     ttk.Label(root, text="Regular Label").grid(row=0, column=1)
     ll = ttk.LinkedLabel(root, text="Linked Label", href="https://www.google.com")
     ll.grid(row=1, column=1)
+    ll.href = "https://www.being.com"
     root.mainloop()
