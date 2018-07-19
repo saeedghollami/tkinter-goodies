@@ -94,7 +94,6 @@ def placeholder(widget=None, placeholder=''):
 	widget.placeholder_message = placeholder  # save every widget message in itslef
 	widget.placeholder_exist = True
 	
-
 	# creating custom event order
 	# PostRemove and PostClick will be evaluvate after default event("TEntry")
 	widget.bindtags(( str(widget), "TEntry", "PostEvent", ".", "all"))
